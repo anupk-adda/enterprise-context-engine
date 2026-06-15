@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ECE — Enterprise Context Engine</title>
-  <meta name="description" content="An open architecture for sovereign enterprise AI — real-time context capture, stream processing, and model-agnostic retrieval via MCP.">
+  <meta name="description" content="ECE — a five-layer architecture for enterprise AI context capture, real-time stream processing, and model-agnostic retrieval via MCP.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
   <style>
@@ -430,7 +430,7 @@
     <div class="hero-eyebrow">Architecture</div>
     <h1>Your AI learns.<br><strong>You keep the knowledge.</strong></h1>
     <p class="hero-sub">
-      ECE is an open architecture for sovereign enterprise AI — a real-time context engine that captures every human–AI interaction, refines it into institutional knowledge, and surfaces it back to any LLM through a model-agnostic MCP layer. Swap models. Never lose learning.
+      ECE is a five-layer architecture for enterprise AI — capturing every human–AI interaction, refining it into institutional knowledge via a real-time Kafka pipeline, and returning it to any LLM through an MCP server. Swap models without losing context.
     </p>
     <div class="hero-ctas">
       <a href="https://github.com/" class="btn-primary">
@@ -447,8 +447,8 @@
 <!-- ARCHITECTURE DIAGRAM -->
 <section class="diagram-section" id="architecture">
   <div class="section-label">System Architecture</div>
-  <h2 class="section-title">The <strong>full stack</strong>, end to end</h2>
-  <p class="section-desc">Five integrated layers. Every AI interaction captured, streamed, refined, stored, and surfaced back as sovereign enterprise context.</p>
+  <h2 class="section-title"><strong>Five layers</strong>, end to end</h2>
+  <p class="section-desc">Every AI interaction captured, streamed, refined, stored, and returned as enterprise context.</p>
 
   <div class="arch-canvas">
     <svg viewBox="0 0 960 820" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono', monospace">
@@ -667,25 +667,29 @@
       <!-- ════════════════════════
            LLM ENDPOINTS
       ════════════════════════ -->
-      <rect x="44"  y="742" width="148" height="44" rx="5" fill="#111827" stroke="rgba(79,142,247,0.2)" stroke-width="0.5"/>
-      <text x="118" y="761" fill="#4F8EF7" font-size="10" font-weight="500" text-anchor="middle">Claude</text>
-      <text x="118" y="777" fill="#2A3A5A" font-size="9" text-anchor="middle">Anthropic API</text>
+      <rect x="44"  y="742" width="110" height="44" rx="5" fill="#111827" stroke="rgba(79,142,247,0.2)" stroke-width="0.5"/>
+      <text x="99"  y="761" fill="#4F8EF7" font-size="10" font-weight="500" text-anchor="middle">Claude</text>
+      <text x="99"  y="777" fill="#2A3A5A" font-size="9"  text-anchor="middle">Anthropic API</text>
 
-      <rect x="210" y="742" width="148" height="44" rx="5" fill="#111827" stroke="rgba(79,142,247,0.2)" stroke-width="0.5"/>
-      <text x="284" y="761" fill="#4F8EF7" font-size="10" font-weight="500" text-anchor="middle">GPT-4o</text>
-      <text x="284" y="777" fill="#2A3A5A" font-size="9" text-anchor="middle">OpenAI API</text>
+      <rect x="166" y="742" width="110" height="44" rx="5" fill="#111827" stroke="rgba(79,142,247,0.2)" stroke-width="0.5"/>
+      <text x="221" y="761" fill="#4F8EF7" font-size="10" font-weight="500" text-anchor="middle">GPT-4o</text>
+      <text x="221" y="777" fill="#2A3A5A" font-size="9"  text-anchor="middle">OpenAI API</text>
 
-      <rect x="376" y="742" width="148" height="44" rx="5" fill="#111827" stroke="rgba(79,142,247,0.2)" stroke-width="0.5"/>
-      <text x="450" y="761" fill="#4F8EF7" font-size="10" font-weight="500" text-anchor="middle">Gemini</text>
-      <text x="450" y="777" fill="#2A3A5A" font-size="9" text-anchor="middle">Google API</text>
+      <rect x="288" y="742" width="110" height="44" rx="5" fill="#111827" stroke="rgba(79,142,247,0.2)" stroke-width="0.5"/>
+      <text x="343" y="761" fill="#4F8EF7" font-size="10" font-weight="500" text-anchor="middle">Gemini</text>
+      <text x="343" y="777" fill="#2A3A5A" font-size="9"  text-anchor="middle">Google API</text>
 
-      <rect x="542" y="742" width="148" height="44" rx="5" fill="#111827" stroke="rgba(79,142,247,0.2)" stroke-width="0.5"/>
-      <text x="616" y="761" fill="#4F8EF7" font-size="10" font-weight="500" text-anchor="middle">Private LLM</text>
-      <text x="616" y="777" fill="#2A3A5A" font-size="9" text-anchor="middle">On-prem / VPC</text>
+      <rect x="410" y="742" width="130" height="44" rx="5" fill="#111827" stroke="rgba(79,142,247,0.3)" stroke-width="0.75"/>
+      <text x="475" y="761" fill="#4F8EF7" font-size="10" font-weight="500" text-anchor="middle">watsonx</text>
+      <text x="475" y="777" fill="#2A3A5A" font-size="9"  text-anchor="middle">IBM API</text>
 
-      <rect x="708" y="742" width="212" height="44" rx="5" fill="#111827" stroke="rgba(79,142,247,0.15)" stroke-width="0.5"/>
-      <text x="814" y="761" fill="#2B5AB7" font-size="10" font-weight="500" text-anchor="middle">Future models</text>
-      <text x="814" y="777" fill="#1A2A3A" font-size="9" text-anchor="middle">context always travels</text>
+      <rect x="552" y="742" width="130" height="44" rx="5" fill="#111827" stroke="rgba(79,142,247,0.2)" stroke-width="0.5"/>
+      <text x="617" y="761" fill="#4F8EF7" font-size="10" font-weight="500" text-anchor="middle">Private LLM</text>
+      <text x="617" y="777" fill="#2A3A5A" font-size="9"  text-anchor="middle">On-prem / VPC</text>
+
+      <rect x="694" y="742" width="224" height="44" rx="5" fill="#111827" stroke="rgba(79,142,247,0.15)" stroke-width="0.5"/>
+      <text x="806" y="761" fill="#2B5AB7" font-size="10" font-weight="500" text-anchor="middle">Future models</text>
+      <text x="806" y="777" fill="#1A2A3A" font-size="9"  text-anchor="middle">context travels with the request</text>
 
       <!-- ── LLM return arrow ── -->
       <line x1="480" y1="742" x2="480" y2="690" stroke="#2B5AB7" stroke-width="0.75" stroke-dasharray="4 3" marker-end="url(#arr)"/>
@@ -697,14 +701,14 @@
 <!-- PRINCIPLES -->
 <section class="principles" id="principles">
   <div class="section-label">Core Principles</div>
-  <h2 class="section-title">Built on <strong>six non-negotiables</strong></h2>
-  <p class="section-desc">Every architectural decision flows from these commitments.</p>
+  <h2 class="section-title"><strong>Six</strong> architectural commitments</h2>
+  <p class="section-desc">Every design decision is grounded in these.</p>
 
   <div class="principles-grid">
     <div class="principle-card">
       <div class="principle-num">P-01</div>
-      <h3>Sovereignty first</h3>
-      <p>Enterprise knowledge never leaves your control. The ECE layer is vendor-agnostic by design — swap any LLM without losing a single learned pattern.</p>
+      <h3>Model independence</h3>
+      <p>Enterprise knowledge is owned by the enterprise. ECE is model-agnostic by design — any LLM can be swapped without losing accumulated context.</p>
     </div>
     <div class="principle-card">
       <div class="principle-num">P-02</div>
@@ -718,8 +722,8 @@
     </div>
     <div class="principle-card">
       <div class="principle-num">P-04</div>
-      <h3>Knowledge that improves</h3>
-      <p>Context feedback loops mean the repo learns which knowledge chunks produce good outcomes. Retrieval ranking improves with every interaction.</p>
+      <h3>Retrieval that improves</h3>
+      <p>A context-feedback topic records which knowledge chunks were used and whether the outcome was positive. Retrieval ranking is updated continuously from these signals.</p>
     </div>
     <div class="principle-card">
       <div class="principle-num">P-05</div>
@@ -737,14 +741,14 @@
 <!-- LAYERS DEEP DIVE -->
 <section class="layers" id="layers">
   <div class="section-label">Layer Deep Dive</div>
-  <h2 class="section-title">Five layers, <strong>one learning loop</strong></h2>
-  <p class="section-desc">Each layer has a single job. Together they compound.</p>
+  <h2 class="section-title"><strong>Five layers</strong>, one loop</h2>
+  <p class="section-desc">Component breakdown and design rationale for each layer.</p>
   <div class="divider"></div>
 
   <div class="layer-row">
     <div class="layer-meta">
       <div class="layer-tag tag-gateway">Agent Gateway</div>
-      <div class="layer-name">The enforcement boundary</div>
+      <div class="layer-name">Proxy and enforcer</div>
       <div class="layer-subtitle">proxy · router · enricher</div>
     </div>
     <div class="layer-body">
@@ -752,8 +756,8 @@
       <p>A transparent reverse proxy that sits between every enterprise client and every LLM endpoint. No client configuration required — traffic is routed through the gateway at the network level. Every outbound request is intercepted, scored for intent and risk, enriched with context from the MCP server, then forwarded. Every response is intercepted, logged, and emitted to Kafka.</p>
       <h4>The prompt router</h4>
       <p>Not every query needs enrichment. An intent classifier inside the gateway routes trivial queries (code formatting, generic explanations) directly to the LLM with zero latency overhead. Only domain-specific or sensitive queries trigger deep context retrieval — keeping p99 latency tight.</p>
-      <h4>AgentTrust integration</h4>
-      <p>The gateway is the natural host for egress control, kill switches, and risk scoring from AgentTrust. Every request is scored before enrichment. High-risk requests are blocked, rerouted, or flagged — all at a single enforcement boundary.</p>
+      <h4>Egress control</h4>
+      <p>The gateway enforces egress policy on every outbound request — scoring for risk, applying data classification rules, and blocking or rerouting requests that exceed defined thresholds. High-risk requests are flagged before enrichment, not after. This makes the gateway the single enforcement boundary rather than distributing policy across individual clients.</p>
       <div class="component-chips">
         <span class="chip">intent-classifier</span>
         <span class="chip">risk-scorer</span>
@@ -768,7 +772,7 @@
   <div class="layer-row">
     <div class="layer-meta">
       <div class="layer-tag tag-stream">Kafka Stream Layer</div>
-      <div class="layer-name">The real-time refinery</div>
+      <div class="layer-name">Real-time refinery</div>
       <div class="layer-subtitle">stream · process · publish</div>
     </div>
     <div class="layer-body">
@@ -792,7 +796,7 @@
   <div class="layer-row">
     <div class="layer-meta">
       <div class="layer-tag tag-repo">Knowledge Repo</div>
-      <div class="layer-name">The institutional memory</div>
+      <div class="layer-name">Tiered memory store</div>
       <div class="layer-subtitle">tier · promote · expire</div>
     </div>
     <div class="layer-body">
@@ -819,16 +823,16 @@
   <div class="layer-row">
     <div class="layer-meta">
       <div class="layer-tag tag-mcp">MCP Server</div>
-      <div class="layer-name">The retrieval interface</div>
+      <div class="layer-name">Retrieval interface</div>
       <div class="layer-subtitle">retrieve · govern · audit</div>
     </div>
     <div class="layer-body">
-      <h4>Two planes, one interface</h4>
-      <p>The MCP server is split into a retrieval plane (fast vector similarity, sub-50ms SLA, called in the gateway hot path) and a governance plane (RBAC checks, audit logging, data residency enforcement — asynchronous). This keeps enrichment latency tight while maintaining full compliance posture.</p>
-      <h4>Vault + Policy Engine</h4>
-      <p>Secret management and credential rotation for all LLM API keys and service tokens are handled by <strong>HashiCorp Vault</strong>, with dynamic secret leases so no long-lived credentials exist in config. Access policy decisions — which user, role, or agent can retrieve which knowledge domain — are enforced by <strong>Open Policy Agent (OPA)</strong>, with policies expressed as code and version-controlled alongside the architecture. IBM IAM provides the identity layer for enterprise SSO integration.</p>
-      <h4>Integrated into the gateway</h4>
-      <p>The MCP server is not a standalone tool — it is called by the gateway before every outbound LLM request that passes the intent router's enrichment threshold. Context is injected into the prompt at the gateway level. The LLM receives an already-enriched request and has no awareness of the enterprise context layer.</p>
+      <h4>Retrieval and governance planes</h4>
+      <p>The MCP server runs two planes with separate SLA profiles. The retrieval plane handles vector similarity search with a sub-50ms target — it sits in the gateway hot path. The governance plane handles RBAC checks, audit logging, and data residency enforcement asynchronously, so compliance overhead does not affect retrieval latency.</p>
+      <h4>Vault and policy engine</h4>
+      <p>LLM API keys and service tokens are issued dynamically via HashiCorp Vault — no long-lived credentials in config. Access policy decisions are evaluated by Open Policy Agent (OPA), with rules expressed as Rego and version-controlled. IBM IAM provides the identity layer for enterprise SSO.</p>
+      <h4>Gateway integration</h4>
+      <p>The MCP server is called by the gateway before every outbound request that passes the intent router's enrichment threshold. Context is injected at the gateway level — the LLM receives an already-enriched prompt.</p>
       <div class="component-chips">
         <span class="chip">context_lookup</span>
         <span class="chip">decision_log</span>
@@ -851,12 +855,12 @@
   <div class="ibm-intro">
     <div>
       <div class="ibm-badge">REFERENCE IMPLEMENTATION</div>
-      <p>The open ECE architecture maps cleanly onto IBM's enterprise platform portfolio. Each abstract layer resolves to a production-grade IBM product — giving enterprises a fully governed, supported, and Cloud Pak-native deployment path while remaining architecturally interchangeable with open alternatives.</p>
-      <p>This is not a proprietary fork. The interfaces remain open. The IBM stack is one opinionated, enterprise-validated instantiation of the reference architecture.</p>
+      <p>Each ECE layer maps to a specific IBM platform product — providing a governed, Cloud Pak-native deployment path while remaining interchangeable with open alternatives at every interface.</p>
+      <p>The component interfaces are unchanged. The IBM stack is one validated instantiation of the reference architecture.</p>
     </div>
     <div>
-      <p>The five layers of ECE resolve to: <strong>Confluent Platform</strong> for stream processing, <strong>watsonx.data OpenSearch</strong> for vector retrieval, <strong>watsonx.data openRAG</strong> for knowledge graph, <strong>watsonx Orchestrate</strong> as the agent control plane, and a governance layer combining <strong>HashiCorp Vault</strong>, <strong>Open Policy Agent</strong>, and <strong>IBM IAM</strong> for zero-trust RBAC across every boundary.</p>
-      <p>All components are deployable on Red Hat OpenShift via Cloud Pak for Data, with full data residency control for APAC regulatory environments.</p>
+      <p>The five layers resolve to: <strong>Confluent Platform</strong> for stream processing, <strong>watsonx.data OpenSearch</strong> for vector retrieval, <strong>watsonx.data openRAG</strong> for the knowledge graph, <strong>watsonx Orchestrate</strong> as the agent control plane, and a security layer of <strong>HashiCorp Vault</strong>, <strong>OPA</strong>, and <strong>IBM IAM</strong> for zero-trust access control across every boundary.</p>
+      <p>All components deploy on Red Hat OpenShift via Cloud Pak for Data, with data residency controls for APAC regulatory requirements.</p>
     </div>
   </div>
 
@@ -872,15 +876,15 @@
       <div class="ibm-layer-body">
         <div class="ibm-product">
           <span class="ibm-product-badge badge-wx">watsonx Orchestrate</span>
-          <div class="ibm-product-desc">Acts as the agent control plane — orchestrating tool calls, managing agent sessions, enforcing skill boundaries, and routing enriched prompts to the correct LLM endpoint. The Orchestrate agent runtime replaces a custom proxy for AI-native workloads, with built-in observability and tool-use tracing.</div>
+          <div class="ibm-product-desc">Agent control plane — orchestrates tool calls, manages agent sessions, enforces skill boundaries, and routes enriched prompts to the correct LLM endpoint. Built-in observability and tool-use tracing.</div>
         </div>
         <div class="ibm-product">
           <span class="ibm-product-badge badge-vault">HashiCorp Vault</span>
-          <div class="ibm-product-desc"><strong>Secret injection at the gateway boundary.</strong> All LLM API keys, service tokens, and database credentials are dynamically issued per-request via Vault's secrets engine. No long-lived credentials in config or environment variables. Vault agent sidecar handles automatic renewal and rotation.</div>
+          <div class="ibm-product-desc">All LLM API keys, service tokens, and database credentials are dynamically issued per request. No long-lived credentials in config. Vault agent sidecar handles renewal and rotation automatically.</div>
         </div>
         <div class="ibm-product">
           <span class="ibm-product-badge badge-opa">OPA Policy Engine</span>
-          <div class="ibm-product-desc"><strong>Request-time policy enforcement.</strong> Every inbound request is evaluated against OPA policies before enrichment — checking user identity, data classification, model access rights, and jurisdiction constraints. Policies are expressed as Rego, version-controlled, and hot-reloaded without gateway restarts.</div>
+          <div class="ibm-product-desc">Every inbound request is evaluated against OPA policies before enrichment — checking user identity, data classification, model access rights, and jurisdiction constraints. Policies are written in Rego, version-controlled, and hot-reloaded without gateway restarts.</div>
         </div>
       </div>
     </div>
@@ -894,7 +898,7 @@
       <div class="ibm-layer-body">
         <div class="ibm-product">
           <span class="ibm-product-badge badge-confluent">Confluent Platform</span>
-          <div class="ibm-product-desc"><strong>Enterprise Kafka with Schema Registry, ksqlDB, and Kafka Connect built in.</strong> Confluent's Schema Registry enforces Avro/Protobuf contracts on the <code style="font-family:var(--mono);font-size:11px;color:#F5A623">raw-interactions</code> and <code style="font-family:var(--mono);font-size:11px;color:#F5A623">enriched-knowledge</code> topics — preventing schema drift across classifier, synthesiser, and evaluator consumers. ksqlDB enables stream-processing queries without a separate Flink or Spark cluster. Fully deployable on OpenShift via Confluent for Kubernetes operator.</div>
+          <div class="ibm-product-desc">Kafka with Schema Registry, ksqlDB, and Kafka Connect. Schema Registry enforces Avro/Protobuf contracts on the <code style="font-family:var(--mono);font-size:11px;color:#F5A623">raw-interactions</code> and <code style="font-family:var(--mono);font-size:11px;color:#F5A623">enriched-knowledge</code> topics, preventing schema drift across consumers. ksqlDB enables stream-processing queries without a separate Flink or Spark cluster. Deployable on OpenShift via the Confluent for Kubernetes operator.</div>
         </div>
       </div>
     </div>
@@ -908,15 +912,15 @@
       <div class="ibm-layer-body">
         <div class="ibm-product">
           <span class="ibm-product-badge badge-wx-data">watsonx.data OpenSearch</span>
-          <div class="ibm-product-desc"><strong>Vector store and semantic retrieval layer.</strong> OpenSearch's k-NN plugin provides ANN-based vector similarity search across embedded knowledge chunks — the primary retrieval path for the MCP server's context_lookup tool. Integrated natively into the watsonx.data lakehouse, with column-level access control via IBM IAM and full audit logging to the data governance layer.</div>
+          <div class="ibm-product-desc">Vector store and semantic retrieval. OpenSearch's k-NN plugin provides ANN-based similarity search across embedded knowledge chunks — the primary retrieval path for the MCP server's context_lookup tool. Integrated into the watsonx.data lakehouse, with column-level access control via IBM IAM and audit logging to the governance layer.</div>
         </div>
         <div class="ibm-product">
           <span class="ibm-product-badge badge-openrag">watsonx.data openRAG</span>
-          <div class="ibm-product-desc"><strong>Knowledge graph and RAG pipeline orchestration.</strong> openRAG manages entity extraction, relationship mapping, and graph-based retrieval across the enterprise concept graph — surfacing multi-hop reasoning that flat vector search cannot reach. Handles the synthesiser consumer's output: linking decisions to their evidence chains, mapping domain concepts to related patterns, and enabling the decay agent to propagate confidence changes across connected nodes.</div>
+          <div class="ibm-product-desc">Knowledge graph and RAG pipeline orchestration. Manages entity extraction, relationship mapping, and graph-based retrieval — surfacing multi-hop reasoning that flat vector search cannot reach. Handles synthesiser consumer output: linking decisions to evidence chains, connecting domain concepts, and propagating confidence changes across related nodes via the memory lifecycle agent.</div>
         </div>
         <div class="ibm-product">
           <span class="ibm-product-badge badge-iam">IBM IAM</span>
-          <div class="ibm-product-desc"><strong>Identity layer for domain-partitioned RBAC.</strong> IBM IAM enforces access boundaries across knowledge domains — a finance query cannot retrieve engineering knowledge, an external agent cannot access internal decision logs. IAM integrates with OPA: IAM provides the identity assertion, OPA applies the policy. All access decisions are logged to the watsonx.data audit store.</div>
+          <div class="ibm-product-desc">Identity layer for domain-partitioned access control. IBM IAM enforces boundaries across knowledge domains — finance queries cannot retrieve engineering context; external agents cannot access internal decision logs. IAM provides the identity assertion; OPA applies the policy. All access decisions are logged to the watsonx.data audit store.</div>
         </div>
       </div>
     </div>
@@ -930,15 +934,15 @@
       <div class="ibm-layer-body">
         <div class="ibm-product">
           <span class="ibm-product-badge badge-wx">watsonx Orchestrate</span>
-          <div class="ibm-product-desc"><strong>MCP tool host and skill registry.</strong> Orchestrate exposes the ECE knowledge repository as native MCP tools — <code style="font-family:var(--mono);font-size:11px;color:#6BA4F8">context_lookup</code>, <code style="font-family:var(--mono);font-size:11px;color:#6BA4F8">decision_log</code>, <code style="font-family:var(--mono);font-size:11px;color:#6BA4F8">knowledge_search</code> — which any connected LLM or agent can invoke. The retrieval plane (OpenSearch k-NN) and governance plane (OPA + IAM) are wired as separate Orchestrate skills with distinct SLA profiles, keeping the hot retrieval path independent of asynchronous compliance checks.</div>
+          <div class="ibm-product-desc">MCP tool host and skill registry. Exposes the knowledge repository as MCP tools — <code style="font-family:var(--mono);font-size:11px;color:#6BA4F8">context_lookup</code>, <code style="font-family:var(--mono);font-size:11px;color:#6BA4F8">decision_log</code>, <code style="font-family:var(--mono);font-size:11px;color:#6BA4F8">knowledge_search</code> — callable by any connected LLM or agent. The retrieval plane (OpenSearch k-NN) and governance plane (OPA + IAM) are registered as separate skills with distinct SLA targets.</div>
         </div>
         <div class="ibm-product">
           <span class="ibm-product-badge badge-vault">HashiCorp Vault</span>
-          <div class="ibm-product-desc"><strong>Credential management for MCP tool endpoints.</strong> Service-to-service credentials between the MCP server, OpenSearch, openRAG, and external LLM APIs are managed via Vault's PKI and database secrets engines. Mutual TLS between all components. Certificate rotation is automatic and zero-downtime.</div>
+          <div class="ibm-product-desc">Credential management for MCP tool endpoints. Service-to-service credentials between the MCP server, OpenSearch, openRAG, and external LLM APIs are managed via Vault's PKI and database secrets engines. Mutual TLS across all components. Certificate rotation is automatic and zero-downtime.</div>
         </div>
         <div class="ibm-product">
           <span class="ibm-product-badge badge-opa">OPA Policy Engine</span>
-          <div class="ibm-product-desc"><strong>Retrieval-time policy evaluation.</strong> Before any context chunk is returned by the MCP server, OPA evaluates the requesting agent's identity, the chunk's classification, and the applicable data residency policy. Chunks flagged as jurisdiction-restricted are filtered before they reach the LLM prompt. Policy violations are emitted to Confluent for real-time alerting.</div>
+          <div class="ibm-product-desc">Retrieval-time policy evaluation. Before any context chunk is returned, OPA evaluates the requesting agent's identity, the chunk's data classification, and applicable data residency rules. Jurisdiction-restricted chunks are filtered before reaching the LLM prompt. Policy violations are emitted to Confluent for alerting.</div>
         </div>
       </div>
     </div>
@@ -948,7 +952,7 @@
   <!-- IBM ARCHITECTURE DIAGRAM -->
   <div class="section-label" style="margin-bottom:12px">IBM Stack Diagram</div>
   <h3 style="font-size:20px;font-weight:300;letter-spacing:-0.01em;margin-bottom:8px">Component mapping, <strong style="font-weight:600">layer by layer</strong></h3>
-  <p class="section-desc">How each open ECE layer resolves to IBM platform components.</p>
+  <p class="section-desc">How each ECE layer maps to IBM platform components.</p>
 
   <div class="ibm-diagram-wrap">
     <svg viewBox="0 0 960 680" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono', monospace">
