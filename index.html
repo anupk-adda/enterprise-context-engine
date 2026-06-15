@@ -1,0 +1,1086 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ECE — Enterprise Context Engine</title>
+  <meta name="description" content="An open architecture for sovereign enterprise AI — real-time context capture, stream processing, and model-agnostic retrieval via MCP.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --navy:    #0A0F1E;
+      --navy-2:  #111827;
+      --navy-3:  #1E2A4A;
+      --navy-4:  #243358;
+      --blue:    #4F8EF7;
+      --blue-dim:#2B5AB7;
+      --teal:    #00D4AA;
+      --amber:   #F5A623;
+      --coral:   #FF6B6B;
+      --purple:  #A78BFA;
+      --text:    #E8F0FE;
+      --text-2:  #94A3C4;
+      --text-3:  #5C6E94;
+      --mono:    'JetBrains Mono', monospace;
+      --sans:    'Inter', sans-serif;
+      --border:  rgba(79,142,247,0.15);
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--navy);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 48px;
+      background: rgba(10,15,30,0.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-logo {
+      font-family: var(--mono);
+      font-size: 15px; font-weight: 600;
+      color: var(--blue);
+      letter-spacing: 0.05em;
+    }
+    .nav-logo span { color: var(--teal); }
+    .nav-links { display: flex; gap: 32px; }
+    .nav-links a {
+      font-size: 13px; font-weight: 400;
+      color: var(--text-2); text-decoration: none;
+      letter-spacing: 0.03em;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--text); }
+    .nav-badge {
+      font-family: var(--mono); font-size: 11px;
+      padding: 5px 12px; border-radius: 20px;
+      border: 1px solid var(--teal);
+      color: var(--teal); letter-spacing: 0.05em;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 120px 48px 80px;
+      position: relative; overflow: hidden;
+    }
+    .hero-grid {
+      position: absolute; inset: 0;
+      background-image:
+        linear-gradient(rgba(79,142,247,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(79,142,247,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+    }
+    .hero-glow {
+      position: absolute;
+      width: 600px; height: 600px;
+      background: radial-gradient(circle, rgba(79,142,247,0.12) 0%, transparent 70%);
+      top: 50%; left: 50%; transform: translate(-50%, -60%);
+      pointer-events: none;
+    }
+    .hero-content { position: relative; text-align: center; max-width: 860px; }
+    .hero-eyebrow {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--mono); font-size: 11px;
+      color: var(--teal); letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 28px;
+    }
+    .hero-eyebrow::before, .hero-eyebrow::after {
+      content: ''; display: block;
+      width: 32px; height: 1px; background: var(--teal); opacity: 0.5;
+    }
+    h1 {
+      font-size: clamp(42px, 6vw, 72px);
+      font-weight: 300; line-height: 1.1;
+      letter-spacing: -0.02em;
+      margin-bottom: 12px;
+    }
+    h1 strong {
+      font-weight: 600;
+      background: linear-gradient(135deg, var(--blue) 0%, var(--teal) 100%);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: clamp(15px, 2vw, 18px);
+      color: var(--text-2); font-weight: 300;
+      max-width: 620px; margin: 20px auto 40px;
+      line-height: 1.7;
+    }
+    .hero-ctas { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+    .btn-primary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 28px; border-radius: 6px;
+      background: var(--blue); color: #fff;
+      font-size: 14px; font-weight: 500; text-decoration: none;
+      transition: opacity 0.2s, transform 0.2s;
+    }
+    .btn-primary:hover { opacity: 0.88; transform: translateY(-1px); }
+    .btn-secondary {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 13px 28px; border-radius: 6px;
+      border: 1px solid var(--border);
+      color: var(--text-2); font-size: 14px; font-weight: 400;
+      text-decoration: none; transition: border-color 0.2s, color 0.2s;
+    }
+    .btn-secondary:hover { border-color: var(--blue); color: var(--text); }
+
+    /* ── ARCHITECTURE DIAGRAM ── */
+    .diagram-section {
+      padding: 80px 48px;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .section-label {
+      font-family: var(--mono); font-size: 11px;
+      color: var(--blue); letter-spacing: 0.12em; text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+    .section-title {
+      font-size: clamp(24px, 3vw, 36px);
+      font-weight: 300; letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+    .section-title strong { font-weight: 600; }
+    .section-desc {
+      color: var(--text-2); font-size: 15px;
+      max-width: 560px; margin-bottom: 48px; line-height: 1.7;
+    }
+
+    .arch-canvas {
+      width: 100%;
+      background: var(--navy-2);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      position: relative;
+    }
+    .arch-canvas svg { display: block; width: 100%; }
+
+    /* pulse animation */
+    @keyframes pulse-flow {
+      0%   { stroke-dashoffset: 200; opacity: 0; }
+      10%  { opacity: 1; }
+      90%  { opacity: 1; }
+      100% { stroke-dashoffset: 0;   opacity: 0; }
+    }
+    @keyframes node-glow {
+      0%, 100% { filter: drop-shadow(0 0 0px rgba(79,142,247,0)); }
+      50%       { filter: drop-shadow(0 0 6px rgba(79,142,247,0.6)); }
+    }
+    @keyframes kafka-pulse {
+      0%, 100% { opacity: 0.6; }
+      50%       { opacity: 1; }
+    }
+    .flow-pulse {
+      stroke-dasharray: 8 4;
+      animation: pulse-flow 2.4s ease-in-out infinite;
+    }
+    .flow-pulse-2 { animation-delay: 0.8s; }
+    .flow-pulse-3 { animation-delay: 1.6s; }
+    .kafka-blink  { animation: kafka-pulse 1.8s ease-in-out infinite; }
+
+    @media (prefers-reduced-motion: reduce) {
+      .flow-pulse, .kafka-blink { animation: none; }
+    }
+
+    /* ── PRINCIPLES GRID ── */
+    .principles {
+      padding: 80px 48px;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .principles-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    .principle-card {
+      background: var(--navy-2);
+      padding: 36px 32px;
+      transition: background 0.2s;
+    }
+    .principle-card:hover { background: var(--navy-3); }
+    .principle-num {
+      font-family: var(--mono); font-size: 11px;
+      color: var(--text-3); letter-spacing: 0.1em;
+      margin-bottom: 20px;
+    }
+    .principle-icon {
+      width: 36px; height: 36px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      margin-bottom: 16px; font-size: 18px;
+    }
+    .principle-card h3 {
+      font-size: 16px; font-weight: 500;
+      margin-bottom: 10px; letter-spacing: -0.01em;
+    }
+    .principle-card p {
+      font-size: 13px; color: var(--text-2);
+      line-height: 1.65;
+    }
+
+    /* ── LAYERS ── */
+    .layers {
+      padding: 80px 48px;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .layer-row {
+      display: grid; grid-template-columns: 200px 1fr;
+      gap: 48px; margin-bottom: 64px;
+      align-items: start;
+    }
+    .layer-meta {}
+    .layer-tag {
+      font-family: var(--mono); font-size: 10px;
+      letter-spacing: 0.12em; text-transform: uppercase;
+      padding: 4px 10px; border-radius: 4px;
+      display: inline-block; margin-bottom: 14px;
+    }
+    .tag-capture  { background: rgba(167,139,250,0.15); color: var(--purple); }
+    .tag-gateway  { background: rgba(255,107,107,0.15); color: var(--coral); }
+    .tag-stream   { background: rgba(245,166,35,0.15);  color: var(--amber); }
+    .tag-repo     { background: rgba(0,212,170,0.15);   color: var(--teal); }
+    .tag-mcp      { background: rgba(79,142,247,0.15);  color: var(--blue); }
+
+    .layer-name {
+      font-size: 18px; font-weight: 500;
+      letter-spacing: -0.01em; margin-bottom: 6px;
+    }
+    .layer-subtitle {
+      font-size: 12px; color: var(--text-3);
+      font-family: var(--mono);
+    }
+    .layer-body h4 {
+      font-size: 15px; font-weight: 500;
+      margin-bottom: 8px; margin-top: 24px;
+      color: var(--text);
+    }
+    .layer-body h4:first-child { margin-top: 0; }
+    .layer-body p {
+      font-size: 14px; color: var(--text-2);
+      line-height: 1.7; margin-bottom: 12px;
+    }
+    .component-chips {
+      display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px;
+    }
+    .chip {
+      font-family: var(--mono); font-size: 11px;
+      padding: 5px 12px; border-radius: 4px;
+      border: 1px solid var(--border);
+      color: var(--text-2);
+    }
+    .divider {
+      height: 1px; background: var(--border);
+      margin-bottom: 64px;
+    }
+
+    /* ── IBM SECTION ── */
+    .ibm-section {
+      padding: 80px 48px;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .ibm-intro {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 48px; margin-bottom: 56px; align-items: start;
+    }
+    .ibm-intro p { font-size: 14px; color: var(--text-2); line-height: 1.75; }
+    .ibm-intro p + p { margin-top: 12px; }
+    .ibm-badge {
+      display: inline-flex; align-items: center; gap: 8px;
+      font-family: var(--mono); font-size: 10px;
+      padding: 4px 12px; border-radius: 4px;
+      background: rgba(79,142,247,0.08);
+      border: 1px solid rgba(79,142,247,0.2);
+      color: var(--blue); letter-spacing: 0.08em;
+      margin-bottom: 20px;
+    }
+    .ibm-stack {
+      display: flex; flex-direction: column; gap: 1px;
+      background: var(--border);
+      border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+      margin-bottom: 56px;
+    }
+    .ibm-row {
+      display: grid; grid-template-columns: 220px 1fr;
+      background: var(--navy-2);
+      transition: background 0.18s;
+    }
+    .ibm-row:hover { background: var(--navy-3); }
+    .ibm-layer-id {
+      padding: 28px 24px;
+      border-right: 1px solid var(--border);
+      display: flex; flex-direction: column; justify-content: center;
+    }
+    .ibm-layer-tag {
+      font-family: var(--mono); font-size: 9px;
+      letter-spacing: 0.14em; text-transform: uppercase;
+      margin-bottom: 8px;
+    }
+    .ibm-layer-name {
+      font-size: 14px; font-weight: 500;
+      letter-spacing: -0.01em; margin-bottom: 4px;
+    }
+    .ibm-layer-open {
+      font-family: var(--mono); font-size: 10px;
+      color: var(--text-3); letter-spacing: 0.06em;
+    }
+    .ibm-layer-body {
+      padding: 28px 28px;
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .ibm-product {
+      display: flex; align-items: flex-start; gap: 12px;
+    }
+    .ibm-product-badge {
+      font-family: var(--mono); font-size: 10px;
+      padding: 3px 10px; border-radius: 4px;
+      white-space: nowrap; flex-shrink: 0;
+      font-weight: 500; letter-spacing: 0.04em;
+    }
+    .badge-confluent { background: rgba(100,70,230,0.15); color: #8B70F0; border: 1px solid rgba(100,70,230,0.25); }
+    .badge-wx        { background: rgba(79,142,247,0.12); color: #6BA4F8; border: 1px solid rgba(79,142,247,0.25); }
+    .badge-wx-data   { background: rgba(0,212,170,0.1);  color: #00D4AA; border: 1px solid rgba(0,212,170,0.2); }
+    .badge-openrag   { background: rgba(245,166,35,0.12); color: #F5A623; border: 1px solid rgba(245,166,35,0.2); }
+    .badge-vault     { background: rgba(255,107,107,0.12); color: #FF8080; border: 1px solid rgba(255,107,107,0.2); }
+    .badge-opa       { background: rgba(167,139,250,0.12); color: #B09DF8; border: 1px solid rgba(167,139,250,0.2); }
+    .badge-iam       { background: rgba(79,142,247,0.08); color: #5A90D8; border: 1px solid rgba(79,142,247,0.15); }
+    .ibm-product-desc {
+      font-size: 13px; color: var(--text-2); line-height: 1.6;
+    }
+    .ibm-product-desc strong { color: var(--text); font-weight: 500; }
+    .ibm-diagram-wrap {
+      width: 100%;
+      background: var(--navy-2);
+      border: 1px solid var(--border);
+      border-radius: 12px; overflow: hidden;
+    }
+    .ibm-diagram-wrap svg { display: block; width: 100%; }
+
+    /* ── FOOTER ── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 48px;
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 24px;
+      max-width: 1100px; margin: 0 auto;
+    }
+    .footer-logo {
+      font-family: var(--mono); font-size: 14px;
+      color: var(--blue); font-weight: 600;
+    }
+    .footer-logo span { color: var(--teal); }
+    .footer-by {
+      font-size: 13px; color: var(--text-3);
+    }
+    .footer-by a { color: var(--text-2); text-decoration: none; }
+    .footer-by a:hover { color: var(--text); }
+    .footer-links { display: flex; gap: 24px; }
+    .footer-links a {
+      font-size: 13px; color: var(--text-3);
+      text-decoration: none; font-family: var(--mono);
+    }
+    .footer-links a:hover { color: var(--text-2); }
+
+    @media (max-width: 768px) {
+      nav { padding: 16px 24px; }
+      .nav-links { display: none; }
+      .hero { padding: 100px 24px 60px; }
+      .diagram-section, .principles, .layers, .ibm-section { padding: 60px 24px; }
+      .layer-row { grid-template-columns: 1fr; gap: 20px; }
+
+      footer { padding: 40px 24px; flex-direction: column; align-items: flex-start; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">ECE<span>::</span>v0.1</div>
+  <div class="nav-links">
+    <a href="#architecture">Architecture</a>
+    <a href="#layers">Layers</a>
+    <a href="#ibm">IBM Stack</a>
+  </div>
+  <div class="nav-badge">EARLY PREVIEW</div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-grid"></div>
+  <div class="hero-glow"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Architecture</div>
+    <h1>Your AI learns.<br><strong>You keep the knowledge.</strong></h1>
+    <p class="hero-sub">
+      ECE is an open architecture for sovereign enterprise AI — a real-time context engine that captures every human–AI interaction, refines it into institutional knowledge, and surfaces it back to any LLM through a model-agnostic MCP layer. Swap models. Never lose learning.
+    </p>
+    <div class="hero-ctas">
+      <a href="https://github.com/" class="btn-primary">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.42 2.865 8.17 6.839 9.49.5.092.682-.217.682-.482 0-.237-.008-.866-.013-1.7-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.462-1.11-1.462-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0112 6.836c.85.004 1.705.115 2.504.337 1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.741 0 .267.18.579.688.481C19.138 20.167 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+        View on GitHub
+      </a>
+      <a href="#architecture" class="btn-secondary">
+        Explore the architecture →
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE DIAGRAM -->
+<section class="diagram-section" id="architecture">
+  <div class="section-label">System Architecture</div>
+  <h2 class="section-title">The <strong>full stack</strong>, end to end</h2>
+  <p class="section-desc">Five integrated layers. Every AI interaction captured, streamed, refined, stored, and surfaced back as sovereign enterprise context.</p>
+
+  <div class="arch-canvas">
+    <svg viewBox="0 0 960 820" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono', monospace">
+      <defs>
+        <marker id="arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#4F8EF7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+        <marker id="arr-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#00D4AA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+        <marker id="arr-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#F5A623" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+        <marker id="arr-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#A78BFA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- ── BG LAYER BANDS ── -->
+      <rect x="20" y="20"  width="920" height="110" rx="10" fill="#1A1F35" stroke="rgba(167,139,250,0.2)" stroke-width="0.5"/>
+      <rect x="20" y="160" width="920" height="130" rx="10" fill="#1A1F2E" stroke="rgba(255,107,107,0.25)" stroke-width="0.5"/>
+      <rect x="20" y="320" width="430" height="240" rx="10" fill="#1A1F28" stroke="rgba(245,166,35,0.2)" stroke-width="0.5"/>
+      <rect x="510" y="320" width="430" height="240" rx="10" fill="#161E2A" stroke="rgba(0,212,170,0.2)" stroke-width="0.5"/>
+      <rect x="20" y="590" width="920" height="110" rx="10" fill="#16202E" stroke="rgba(79,142,247,0.2)" stroke-width="0.5"/>
+      <rect x="20" y="730" width="920" height="70" rx="10" fill="#111827" stroke="rgba(79,142,247,0.1)" stroke-width="0.5"/>
+
+      <!-- ── LAYER LABELS ── -->
+      <text x="36" y="42"  fill="#A78BFA" font-size="9" letter-spacing="2" opacity="0.9">CAPTURE LAYER</text>
+      <text x="36" y="180" fill="#FF6B6B" font-size="9" letter-spacing="2" opacity="0.9">AGENT GATEWAY</text>
+      <text x="36" y="340" fill="#F5A623" font-size="9" letter-spacing="2" opacity="0.9">KAFKA STREAM LAYER</text>
+      <text x="526" y="340" fill="#00D4AA" font-size="9" letter-spacing="2" opacity="0.9">KNOWLEDGE REPOSITORY</text>
+      <text x="36" y="610" fill="#4F8EF7" font-size="9" letter-spacing="2" opacity="0.9">MCP SERVER</text>
+      <text x="36" y="750" fill="#5C6E94" font-size="9" letter-spacing="2" opacity="0.9">LLM ENDPOINTS</text>
+
+      <!-- ════════════════════════
+           CAPTURE: client nodes
+      ════════════════════════ -->
+      <g>
+        <rect x="44"  y="52" width="140" height="60" rx="6" fill="#252040" stroke="rgba(167,139,250,0.35)" stroke-width="0.75"/>
+        <text x="114" y="77" fill="#A78BFA" font-size="11" font-weight="500" text-anchor="middle">Copilots</text>
+        <text x="114" y="94" fill="#6B5FA0" font-size="9" text-anchor="middle">M365 · GitHub · Cursor</text>
+      </g>
+      <g>
+        <rect x="204" y="52" width="140" height="60" rx="6" fill="#252040" stroke="rgba(167,139,250,0.35)" stroke-width="0.75"/>
+        <text x="274" y="77" fill="#A78BFA" font-size="11" font-weight="500" text-anchor="middle">AI Agents</text>
+        <text x="274" y="94" fill="#6B5FA0" font-size="9" text-anchor="middle">LangChain · CrewAI · custom</text>
+      </g>
+      <g>
+        <rect x="364" y="52" width="140" height="60" rx="6" fill="#252040" stroke="rgba(167,139,250,0.35)" stroke-width="0.75"/>
+        <text x="434" y="77" fill="#A78BFA" font-size="11" font-weight="500" text-anchor="middle">IDE / Code</text>
+        <text x="434" y="94" fill="#6B5FA0" font-size="9" text-anchor="middle">VS Code · JetBrains · Claude</text>
+      </g>
+      <g>
+        <rect x="524" y="52" width="140" height="60" rx="6" fill="#252040" stroke="rgba(167,139,250,0.35)" stroke-width="0.75"/>
+        <text x="594" y="77" fill="#A78BFA" font-size="11" font-weight="500" text-anchor="middle">Internal Apps</text>
+        <text x="594" y="94" fill="#6B5FA0" font-size="9" text-anchor="middle">CRM · ERP · custom portals</text>
+      </g>
+      <g>
+        <rect x="684" y="52" width="140" height="60" rx="6" fill="#252040" stroke="rgba(167,139,250,0.35)" stroke-width="0.75"/>
+        <text x="754" y="77" fill="#A78BFA" font-size="11" font-weight="500" text-anchor="middle">API Consumers</text>
+        <text x="754" y="94" fill="#6B5FA0" font-size="9" text-anchor="middle">Direct LLM API calls</text>
+      </g>
+      <!-- Arrow: clients → gateway -->
+      <line x1="480" y1="112" x2="480" y2="155" stroke="#A78BFA" stroke-width="1" marker-end="url(#arr-purple)"/>
+      <!-- Pulse on this line -->
+      <line class="flow-pulse" x1="480" y1="112" x2="480" y2="155" stroke="#A78BFA" stroke-width="2" opacity="0.7"/>
+
+      <!-- ════════════════════════
+           AGENT GATEWAY
+      ════════════════════════ -->
+      <rect x="44" y="168" width="872" height="112" rx="8" fill="#2D1F1F" stroke="rgba(255,107,107,0.4)" stroke-width="1"/>
+      <!-- Gateway internals -->
+      <rect x="64" y="188" width="156" height="72" rx="5" fill="#1A1212" stroke="rgba(255,107,107,0.2)" stroke-width="0.5"/>
+      <text x="142" y="211" fill="#FF6B6B" font-size="10" font-weight="500" text-anchor="middle">① Intercept</text>
+      <text x="142" y="228" fill="#8A5A5A" font-size="9" text-anchor="middle">Transparent reverse proxy</text>
+      <text x="142" y="243" fill="#8A5A5A" font-size="9" text-anchor="middle">all traffic routed through</text>
+
+      <rect x="240" y="188" width="156" height="72" rx="5" fill="#1A1212" stroke="rgba(255,107,107,0.2)" stroke-width="0.5"/>
+      <text x="318" y="211" fill="#FF6B6B" font-size="10" font-weight="500" text-anchor="middle">② Route &amp; Score</text>
+      <text x="318" y="228" fill="#8A5A5A" font-size="9" text-anchor="middle">Intent classifier · risk</text>
+      <text x="318" y="243" fill="#8A5A5A" font-size="9" text-anchor="middle">scorer · policy check</text>
+
+      <rect x="416" y="188" width="156" height="72" rx="5" fill="#1A1212" stroke="rgba(255,107,107,0.2)" stroke-width="0.5"/>
+      <text x="494" y="211" fill="#FF6B6B" font-size="10" font-weight="500" text-anchor="middle">③ MCP Enrich</text>
+      <text x="494" y="228" fill="#8A5A5A" font-size="9" text-anchor="middle">Calls MCP server · injects</text>
+      <text x="494" y="243" fill="#8A5A5A" font-size="9" text-anchor="middle">enterprise context</text>
+
+      <rect x="592" y="188" width="156" height="72" rx="5" fill="#1A1212" stroke="rgba(255,107,107,0.2)" stroke-width="0.5"/>
+      <text x="670" y="211" fill="#FF6B6B" font-size="10" font-weight="500" text-anchor="middle">④ Forward &amp; Log</text>
+      <text x="670" y="228" fill="#8A5A5A" font-size="9" text-anchor="middle">Enriched prompt to LLM</text>
+      <text x="670" y="243" fill="#8A5A5A" font-size="9" text-anchor="middle">response → Kafka emit</text>
+
+      <rect x="768" y="188" width="136" height="72" rx="5" fill="#1A1212" stroke="rgba(255,107,107,0.2)" stroke-width="0.5"/>
+      <text x="836" y="211" fill="#FF6B6B" font-size="10" font-weight="500" text-anchor="middle">⑤ Feedback</text>
+      <text x="836" y="228" fill="#8A5A5A" font-size="9" text-anchor="middle">Capture outcome signal</text>
+      <text x="836" y="243" fill="#8A5A5A" font-size="9" text-anchor="middle">emit to ctx-feedback</text>
+
+      <!-- ── GATEWAY → KAFKA ── -->
+      <line x1="350" y1="280" x2="280" y2="318" stroke="#F5A623" stroke-width="1" marker-end="url(#arr-amber)"/>
+      <line class="flow-pulse flow-pulse-2" x1="350" y1="280" x2="280" y2="318" stroke="#F5A623" stroke-width="2" opacity="0.8"/>
+      <text x="255" y="308" fill="#8A6A30" font-size="9">raw events</text>
+
+      <!-- ════════════════════════
+           KAFKA LAYER (LEFT)
+      ════════════════════════ -->
+      <!-- Topic: raw-interactions -->
+      <rect x="44" y="332" width="396" height="44" rx="5" fill="#1F1A0F" stroke="rgba(245,166,35,0.35)" stroke-width="0.75"/>
+      <text x="62" y="350" fill="#F5A623" font-size="9" font-weight="500">topic:</text>
+      <text x="100" y="350" fill="#B07A1A" font-size="9">raw-interactions</text>
+      <text x="62" y="366" fill="#6B5A30" font-size="9">prompt · response · trace_id · user · timestamp · model</text>
+
+      <!-- Kafka consumers -->
+      <rect x="44"  y="392" width="118" height="64" rx="5" fill="#1F1A0F" stroke="rgba(245,166,35,0.25)" stroke-width="0.5"/>
+      <text x="103" y="415" fill="#F5A623" font-size="10" font-weight="500" text-anchor="middle">Classifier</text>
+      <text x="103" y="431" fill="#6B5A30" font-size="9" text-anchor="middle">domain · intent</text>
+      <text x="103" y="445" fill="#6B5A30" font-size="9" text-anchor="middle">sensitivity</text>
+
+      <rect x="174" y="392" width="118" height="64" rx="5" fill="#1F1A0F" stroke="rgba(245,166,35,0.25)" stroke-width="0.5"/>
+      <text x="233" y="415" fill="#F5A623" font-size="10" font-weight="500" text-anchor="middle">Synthesiser</text>
+      <text x="233" y="431" fill="#6B5A30" font-size="9" text-anchor="middle">extract decisions</text>
+      <text x="233" y="445" fill="#6B5A30" font-size="9" text-anchor="middle">patterns · lessons</text>
+
+      <rect x="304" y="392" width="118" height="64" rx="5" fill="#1F1A0F" stroke="rgba(245,166,35,0.25)" stroke-width="0.5"/>
+      <text x="363" y="415" fill="#F5A623" font-size="10" font-weight="500" text-anchor="middle">Evaluator</text>
+      <text x="363" y="431" fill="#6B5A30" font-size="9" text-anchor="middle">confidence score</text>
+      <text x="363" y="445" fill="#6B5A30" font-size="9" text-anchor="middle">quality gate</text>
+
+      <!-- Topic: enriched-knowledge -->
+      <rect x="44" y="470" width="396" height="44" rx="5" fill="#1F1A0F" stroke="rgba(245,166,35,0.35)" stroke-width="0.75"/>
+      <text x="62" y="488" fill="#F5A623" font-size="9" font-weight="500">topic:</text>
+      <text x="100" y="488" fill="#B07A1A" font-size="9">enriched-knowledge</text>
+      <text x="62" y="504" fill="#6B5A30" font-size="9">tagged units · confidence · domain · TTL · version</text>
+
+      <!-- Topic: ctx-feedback -->
+      <rect x="44" y="526" width="396" height="40" rx="5" fill="#1F1A0F" stroke="rgba(245,166,35,0.2)" stroke-width="0.5"/>
+      <text x="62" y="543" fill="#F5A623" font-size="9" font-weight="500">topic:</text>
+      <text x="100" y="543" fill="#B07A1A" font-size="9">context-feedback</text>
+      <text x="62" y="557" fill="#6B5A30" font-size="9">chunk_id · outcome · implicit signal · ranking boost</text>
+
+      <!-- Kafka flow arrows -->
+      <line x1="163" y1="376" x2="103" y2="392" stroke="#F5A623" stroke-width="0.75" marker-end="url(#arr-amber)"/>
+      <line x1="243" y1="376" x2="233" y2="392" stroke="#F5A623" stroke-width="0.75" marker-end="url(#arr-amber)"/>
+      <line x1="323" y1="376" x2="363" y2="392" stroke="#F5A623" stroke-width="0.75" marker-end="url(#arr-amber)"/>
+      <line x1="103" y1="456" x2="163" y2="470" stroke="#F5A623" stroke-width="0.75" marker-end="url(#arr-amber)"/>
+      <line x1="233" y1="456" x2="233" y2="470" stroke="#F5A623" stroke-width="0.75" marker-end="url(#arr-amber)"/>
+      <line x1="363" y1="456" x2="303" y2="470" stroke="#F5A623" stroke-width="0.75" marker-end="url(#arr-amber)"/>
+
+      <!-- Kafka blink indicator -->
+      <circle class="kafka-blink" cx="430" cy="354" r="4" fill="#F5A623"/>
+      <circle class="kafka-blink" cx="430" cy="488" r="4" fill="#F5A623" style="animation-delay:0.6s"/>
+      <circle class="kafka-blink" cx="430" cy="546" r="4" fill="#F5A623" style="animation-delay:1.2s"/>
+
+      <!-- ── KAFKA → REPO ── -->
+      <line x1="500" y1="480" x2="528" y2="480" stroke="#00D4AA" stroke-width="1" marker-end="url(#arr-teal)"/>
+      <line class="flow-pulse flow-pulse-3" x1="440" y1="488" x2="528" y2="488" stroke="#00D4AA" stroke-width="2" opacity="0.8"/>
+
+      <!-- ════════════════════════
+           KNOWLEDGE REPO (RIGHT)
+      ════════════════════════ -->
+      <rect x="526" y="332" width="404" height="50" rx="5" fill="#0D1F1A" stroke="rgba(0,212,170,0.3)" stroke-width="0.75"/>
+      <text x="728" y="352" fill="#00D4AA" font-size="10" font-weight="500" text-anchor="middle">Vector store</text>
+      <text x="728" y="368" fill="#2A6B5A" font-size="9" text-anchor="middle">Semantic embeddings · similarity retrieval · freshness index</text>
+
+      <rect x="526" y="394" width="192" height="50" rx="5" fill="#0D1F1A" stroke="rgba(0,212,170,0.25)" stroke-width="0.5"/>
+      <text x="622" y="414" fill="#00D4AA" font-size="10" font-weight="500" text-anchor="middle">Concept graph</text>
+      <text x="622" y="430" fill="#2A6B5A" font-size="9" text-anchor="middle">Entity · relationship · domain</text>
+
+      <rect x="730" y="394" width="200" height="50" rx="5" fill="#0D1F1A" stroke="rgba(0,212,170,0.25)" stroke-width="0.5"/>
+      <text x="830" y="414" fill="#00D4AA" font-size="10" font-weight="500" text-anchor="middle">Decision log</text>
+      <text x="830" y="430" fill="#2A6B5A" font-size="9" text-anchor="middle">Versioned · auditable · RBAC</text>
+
+      <rect x="526" y="456" width="192" height="50" rx="5" fill="#0D1F1A" stroke="rgba(0,212,170,0.25)" stroke-width="0.5"/>
+      <text x="622" y="476" fill="#00D4AA" font-size="10" font-weight="500" text-anchor="middle">Private evals</text>
+      <text x="622" y="492" fill="#2A6B5A" font-size="9" text-anchor="middle">Business-outcome benchmarks</text>
+
+      <rect x="730" y="456" width="200" height="50" rx="5" fill="#0D1F1A" stroke="rgba(0,212,170,0.25)" stroke-width="0.5"/>
+      <text x="830" y="476" fill="#00D4AA" font-size="10" font-weight="500" text-anchor="middle">Memory lifecycle</text>
+      <text x="830" y="492" fill="#2A6B5A" font-size="9" text-anchor="middle">Tier promotion · decay · review</text>
+
+      <!-- ── REPO → MCP ── -->
+      <line x1="728" y1="570" x2="728" y2="588" stroke="#4F8EF7" stroke-width="1" marker-end="url(#arr)"/>
+      <line class="flow-pulse" x1="728" y1="570" x2="728" y2="588" stroke="#4F8EF7" stroke-width="2" opacity="0.8"/>
+
+      <!-- ════════════════════════
+           MCP SERVER
+      ════════════════════════ -->
+      <rect x="44" y="600" width="430" height="90" rx="7" fill="#111D2E" stroke="rgba(79,142,247,0.4)" stroke-width="1"/>
+      <text x="64" y="626" fill="#4F8EF7" font-size="10" font-weight="600">ECE MCP Server</text>
+      <text x="64" y="645" fill="#2A4A7A" font-size="9">context_lookup  ·  decision_log  ·  knowledge_search</text>
+      <rect x="64" y="655" width="108" height="24" rx="4" fill="#0D1828" stroke="rgba(79,142,247,0.2)" stroke-width="0.5"/>
+      <text x="118" y="671" fill="#3A6AAA" font-size="9" text-anchor="middle">Retrieval plane</text>
+      <rect x="184" y="655" width="108" height="24" rx="4" fill="#0D1828" stroke="rgba(79,142,247,0.2)" stroke-width="0.5"/>
+      <text x="238" y="671" fill="#3A6AAA" font-size="9" text-anchor="middle">Governance plane</text>
+      <rect x="304" y="655" width="108" height="24" rx="4" fill="#0D1828" stroke="rgba(79,142,247,0.2)" stroke-width="0.5"/>
+      <text x="358" y="671" fill="#3A6AAA" font-size="9" text-anchor="middle">RBAC · audit</text>
+
+      <!-- MCP right info -->
+      <rect x="510" y="600" width="410" height="90" rx="7" fill="#111D2E" stroke="rgba(79,142,247,0.25)" stroke-width="0.5"/>
+      <text x="530" y="626" fill="#4F8EF7" font-size="10" font-weight="600">Schema Registry</text>
+      <text x="530" y="645" fill="#2A4A7A" font-size="9">Confluent-compatible · enforces event contracts</text>
+      <text x="530" y="662" fill="#2A4A7A" font-size="9">between gateway producers and stream consumers</text>
+      <text x="530" y="679" fill="#2A4A7A" font-size="9">Prevents schema drift on raw-interactions topic</text>
+
+      <!-- ── MCP → GATEWAY loop (the critical path) ── -->
+      <path d="M 44 645 Q 16 645 16 224 Q 16 188 44 188" fill="none" stroke="#4F8EF7" stroke-width="1.2" stroke-dasharray="6 3" marker-end="url(#arr)"/>
+      <!-- Animated pulse on loop -->
+      <path class="flow-pulse flow-pulse-2" d="M 44 645 Q 16 645 16 224 Q 16 188 44 188" fill="none" stroke="#4F8EF7" stroke-width="2.5" opacity="0.6"/>
+
+      <!-- ── GATEWAY → LLMs ── -->
+      <line x1="670" y1="280" x2="730" y2="318" stroke="#4F8EF7" stroke-width="1" marker-end="url(#arr)"/>
+      <text x="720" y="308" fill="#2A4A7A" font-size="9">enriched prompt</text>
+
+      <!-- ── FEEDBACK loop label ── -->
+      <text x="12" y="440" fill="#2B5AB7" font-size="9" transform="rotate(-90 12 440)" text-anchor="middle">MCP context loop</text>
+
+      <!-- ════════════════════════
+           LLM ENDPOINTS
+      ════════════════════════ -->
+      <rect x="44"  y="742" width="148" height="44" rx="5" fill="#111827" stroke="rgba(79,142,247,0.2)" stroke-width="0.5"/>
+      <text x="118" y="761" fill="#4F8EF7" font-size="10" font-weight="500" text-anchor="middle">Claude</text>
+      <text x="118" y="777" fill="#2A3A5A" font-size="9" text-anchor="middle">Anthropic API</text>
+
+      <rect x="210" y="742" width="148" height="44" rx="5" fill="#111827" stroke="rgba(79,142,247,0.2)" stroke-width="0.5"/>
+      <text x="284" y="761" fill="#4F8EF7" font-size="10" font-weight="500" text-anchor="middle">GPT-4o</text>
+      <text x="284" y="777" fill="#2A3A5A" font-size="9" text-anchor="middle">OpenAI API</text>
+
+      <rect x="376" y="742" width="148" height="44" rx="5" fill="#111827" stroke="rgba(79,142,247,0.2)" stroke-width="0.5"/>
+      <text x="450" y="761" fill="#4F8EF7" font-size="10" font-weight="500" text-anchor="middle">Gemini</text>
+      <text x="450" y="777" fill="#2A3A5A" font-size="9" text-anchor="middle">Google API</text>
+
+      <rect x="542" y="742" width="148" height="44" rx="5" fill="#111827" stroke="rgba(79,142,247,0.2)" stroke-width="0.5"/>
+      <text x="616" y="761" fill="#4F8EF7" font-size="10" font-weight="500" text-anchor="middle">Private LLM</text>
+      <text x="616" y="777" fill="#2A3A5A" font-size="9" text-anchor="middle">On-prem / VPC</text>
+
+      <rect x="708" y="742" width="212" height="44" rx="5" fill="#111827" stroke="rgba(79,142,247,0.15)" stroke-width="0.5"/>
+      <text x="814" y="761" fill="#2B5AB7" font-size="10" font-weight="500" text-anchor="middle">Future models</text>
+      <text x="814" y="777" fill="#1A2A3A" font-size="9" text-anchor="middle">context always travels</text>
+
+      <!-- ── LLM return arrow ── -->
+      <line x1="480" y1="742" x2="480" y2="690" stroke="#2B5AB7" stroke-width="0.75" stroke-dasharray="4 3" marker-end="url(#arr)"/>
+
+    </svg>
+  </div>
+</section>
+
+<!-- PRINCIPLES -->
+<section class="principles" id="principles">
+  <div class="section-label">Core Principles</div>
+  <h2 class="section-title">Built on <strong>six non-negotiables</strong></h2>
+  <p class="section-desc">Every architectural decision flows from these commitments.</p>
+
+  <div class="principles-grid">
+    <div class="principle-card">
+      <div class="principle-num">P-01</div>
+      <h3>Sovereignty first</h3>
+      <p>Enterprise knowledge never leaves your control. The ECE layer is vendor-agnostic by design — swap any LLM without losing a single learned pattern.</p>
+    </div>
+    <div class="principle-card">
+      <div class="principle-num">P-02</div>
+      <h3>Zero-friction capture</h3>
+      <p>The Agent Gateway is a transparent proxy. No behaviour change required from users or developers. Every AI interaction is captured by default.</p>
+    </div>
+    <div class="principle-card">
+      <div class="principle-num">P-03</div>
+      <h3>Stream-first processing</h3>
+      <p>Kafka ensures knowledge is available within seconds of being generated. No batch jobs, no stale context, no overnight pipelines.</p>
+    </div>
+    <div class="principle-card">
+      <div class="principle-num">P-04</div>
+      <h3>Knowledge that improves</h3>
+      <p>Context feedback loops mean the repo learns which knowledge chunks produce good outcomes. Retrieval ranking improves with every interaction.</p>
+    </div>
+    <div class="principle-card">
+      <div class="principle-num">P-05</div>
+      <h3>Governed by design</h3>
+      <p>RBAC, audit logging, data residency enforcement, and schema registries are structural — not bolted on. Compliance is architectural, not operational.</p>
+    </div>
+    <div class="principle-card">
+      <div class="principle-num">P-06</div>
+      <h3>Tiered agent memory</h3>
+      <p>Memory is structured across three tiers — in-context (session), working (project-scoped), and long-term (enterprise repo) — so agents retrieve at the right granularity and freshness for every query. Decay and promotion are automatic.</p>
+    </div>
+  </div>
+</section>
+
+<!-- LAYERS DEEP DIVE -->
+<section class="layers" id="layers">
+  <div class="section-label">Layer Deep Dive</div>
+  <h2 class="section-title">Five layers, <strong>one learning loop</strong></h2>
+  <p class="section-desc">Each layer has a single job. Together they compound.</p>
+  <div class="divider"></div>
+
+  <div class="layer-row">
+    <div class="layer-meta">
+      <div class="layer-tag tag-gateway">Agent Gateway</div>
+      <div class="layer-name">The enforcement boundary</div>
+      <div class="layer-subtitle">proxy · router · enricher</div>
+    </div>
+    <div class="layer-body">
+      <h4>What it does</h4>
+      <p>A transparent reverse proxy that sits between every enterprise client and every LLM endpoint. No client configuration required — traffic is routed through the gateway at the network level. Every outbound request is intercepted, scored for intent and risk, enriched with context from the MCP server, then forwarded. Every response is intercepted, logged, and emitted to Kafka.</p>
+      <h4>The prompt router</h4>
+      <p>Not every query needs enrichment. An intent classifier inside the gateway routes trivial queries (code formatting, generic explanations) directly to the LLM with zero latency overhead. Only domain-specific or sensitive queries trigger deep context retrieval — keeping p99 latency tight.</p>
+      <h4>AgentTrust integration</h4>
+      <p>The gateway is the natural host for egress control, kill switches, and risk scoring from AgentTrust. Every request is scored before enrichment. High-risk requests are blocked, rerouted, or flagged — all at a single enforcement boundary.</p>
+      <div class="component-chips">
+        <span class="chip">intent-classifier</span>
+        <span class="chip">risk-scorer</span>
+        <span class="chip">mcp-enricher</span>
+        <span class="chip">audit-emitter</span>
+        <span class="chip">policy-engine</span>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <div class="layer-row">
+    <div class="layer-meta">
+      <div class="layer-tag tag-stream">Kafka Stream Layer</div>
+      <div class="layer-name">The real-time refinery</div>
+      <div class="layer-subtitle">stream · process · publish</div>
+    </div>
+    <div class="layer-body">
+      <h4>Three topics, one pipeline</h4>
+      <p><code style="font-family:var(--mono);font-size:12px;color:var(--amber)">raw-interactions</code> receives every gateway event at ingestion speed. Stream consumers fan out independently: a Classifier tags domain, intent, and sensitivity; a Synthesiser extracts decisions, patterns, and lessons; an Evaluator scores confidence and applies a quality gate. Output flows to <code style="font-family:var(--mono);font-size:12px;color:var(--amber)">enriched-knowledge</code>.</p>
+      <h4>The feedback topic</h4>
+      <p><code style="font-family:var(--mono);font-size:12px;color:var(--amber)">context-feedback</code> is the self-improvement mechanism. When the gateway captures which context chunks were used and whether the interaction outcome was positive, those signals flow back here. Retrieval ranking for high-performing chunks is boosted automatically.</p>
+      <h4>Schema registry</h4>
+      <p>A Confluent-compatible schema registry enforces event contracts between gateway producers and stream consumers. Schema drift on <code style="font-family:var(--mono);font-size:12px;color:var(--amber)">raw-interactions</code> is a breaking change — the registry prevents it from silently corrupting downstream consumers.</p>
+      <div class="component-chips">
+        <span class="chip">kafka-streams</span>
+        <span class="chip">schema-registry</span>
+        <span class="chip">classifier-consumer</span>
+        <span class="chip">synthesiser-consumer</span>
+        <span class="chip">evaluator-consumer</span>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <div class="layer-row">
+    <div class="layer-meta">
+      <div class="layer-tag tag-repo">Knowledge Repo</div>
+      <div class="layer-name">The institutional memory</div>
+      <div class="layer-subtitle">tier · promote · expire</div>
+    </div>
+    <div class="layer-body">
+      <h4>Three-tier memory architecture</h4>
+      <p>Agent memory is structured across three distinct tiers, each with its own storage backend, TTL policy, and retrieval latency profile. <strong>Tier 1 — In-context memory</strong> is ephemeral session state held in the active prompt window: the current conversation, tool call history, intermediate reasoning. Lives only for the duration of the agent session. <strong>Tier 2 — Working memory</strong> is project-scoped, persisted across sessions within a defined scope (a sprint, a customer engagement, a running incident). Stored in a fast key-value or short-horizon vector index with a configurable TTL of hours to weeks. <strong>Tier 3 — Long-term enterprise memory</strong> is the durable institutional knowledge repo: domain-classified embeddings, concept graph, versioned decision log, and private evals — partitioned by domain, access-controlled, and retained indefinitely with managed decay.</p>
+      <h4>Promotion and decay</h4>
+      <p>A memory lifecycle agent continuously monitors Tier 2 working memory. Patterns that recur across multiple sessions, or working memory explicitly flagged by a human, are promoted to Tier 3 and classified into the enterprise knowledge graph. Tier 3 chunks that age without retrieval have their confidence scores progressively downgraded — high-importance chunks surface in a human review queue before expiry rather than being silently dropped. This keeps the long-term repo free of stale context without manual curation.</p>
+      <h4>Multi-modal storage</h4>
+      <p>Tier 2 uses a fast vector index (sub-10ms) optimised for recency. Tier 3 uses a full vector store for semantic retrieval, a concept graph for relationship mapping, a versioned decision log for auditability, and a private evals store for business-outcome benchmarks — all domain-partitioned and access-controlled via Vault and OPA.</p>
+      <div class="component-chips">
+        <span class="chip">tier-1: in-context</span>
+        <span class="chip">tier-2: working memory</span>
+        <span class="chip">tier-3: enterprise repo</span>
+        <span class="chip">memory-lifecycle-agent</span>
+        <span class="chip">promotion-policy</span>
+        <span class="chip">decay-scoring</span>
+        <span class="chip">concept-graph</span>
+        <span class="chip">private-evals</span>
+      </div>
+    </div>
+  </div>
+  <div class="divider"></div>
+
+  <div class="layer-row">
+    <div class="layer-meta">
+      <div class="layer-tag tag-mcp">MCP Server</div>
+      <div class="layer-name">The retrieval interface</div>
+      <div class="layer-subtitle">retrieve · govern · audit</div>
+    </div>
+    <div class="layer-body">
+      <h4>Two planes, one interface</h4>
+      <p>The MCP server is split into a retrieval plane (fast vector similarity, sub-50ms SLA, called in the gateway hot path) and a governance plane (RBAC checks, audit logging, data residency enforcement — asynchronous). This keeps enrichment latency tight while maintaining full compliance posture.</p>
+      <h4>Vault + Policy Engine</h4>
+      <p>Secret management and credential rotation for all LLM API keys and service tokens are handled by <strong>HashiCorp Vault</strong>, with dynamic secret leases so no long-lived credentials exist in config. Access policy decisions — which user, role, or agent can retrieve which knowledge domain — are enforced by <strong>Open Policy Agent (OPA)</strong>, with policies expressed as code and version-controlled alongside the architecture. IBM IAM provides the identity layer for enterprise SSO integration.</p>
+      <h4>Integrated into the gateway</h4>
+      <p>The MCP server is not a standalone tool — it is called by the gateway before every outbound LLM request that passes the intent router's enrichment threshold. Context is injected into the prompt at the gateway level. The LLM receives an already-enriched request and has no awareness of the enterprise context layer.</p>
+      <div class="component-chips">
+        <span class="chip">context_lookup</span>
+        <span class="chip">decision_log</span>
+        <span class="chip">knowledge_search</span>
+        <span class="chip">retrieval-plane</span>
+        <span class="chip">governance-plane</span>
+        <span class="chip">HashiCorp Vault</span>
+        <span class="chip">OPA policy engine</span>
+        <span class="chip">IBM IAM</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- IBM STACK SECTION -->
+<section class="ibm-section" id="ibm">
+  <div class="section-label">IBM Reference Implementation</div>
+  <h2 class="section-title">ECE on the <strong>IBM stack</strong></h2>
+
+  <div class="ibm-intro">
+    <div>
+      <div class="ibm-badge">REFERENCE IMPLEMENTATION</div>
+      <p>The open ECE architecture maps cleanly onto IBM's enterprise platform portfolio. Each abstract layer resolves to a production-grade IBM product — giving enterprises a fully governed, supported, and Cloud Pak-native deployment path while remaining architecturally interchangeable with open alternatives.</p>
+      <p>This is not a proprietary fork. The interfaces remain open. The IBM stack is one opinionated, enterprise-validated instantiation of the reference architecture.</p>
+    </div>
+    <div>
+      <p>The five layers of ECE resolve to: <strong>Confluent Platform</strong> for stream processing, <strong>watsonx.data OpenSearch</strong> for vector retrieval, <strong>watsonx.data openRAG</strong> for knowledge graph, <strong>watsonx Orchestrate</strong> as the agent control plane, and a governance layer combining <strong>HashiCorp Vault</strong>, <strong>Open Policy Agent</strong>, and <strong>IBM IAM</strong> for zero-trust RBAC across every boundary.</p>
+      <p>All components are deployable on Red Hat OpenShift via Cloud Pak for Data, with full data residency control for APAC regulatory environments.</p>
+    </div>
+  </div>
+
+  <!-- STACK TABLE -->
+  <div class="ibm-stack">
+
+    <div class="ibm-row">
+      <div class="ibm-layer-id">
+        <div class="ibm-layer-tag" style="color:#FF6B6B">Agent Gateway</div>
+        <div class="ibm-layer-name">Control plane</div>
+        <div class="ibm-layer-open">open: nginx / envoy proxy</div>
+      </div>
+      <div class="ibm-layer-body">
+        <div class="ibm-product">
+          <span class="ibm-product-badge badge-wx">watsonx Orchestrate</span>
+          <div class="ibm-product-desc">Acts as the agent control plane — orchestrating tool calls, managing agent sessions, enforcing skill boundaries, and routing enriched prompts to the correct LLM endpoint. The Orchestrate agent runtime replaces a custom proxy for AI-native workloads, with built-in observability and tool-use tracing.</div>
+        </div>
+        <div class="ibm-product">
+          <span class="ibm-product-badge badge-vault">HashiCorp Vault</span>
+          <div class="ibm-product-desc"><strong>Secret injection at the gateway boundary.</strong> All LLM API keys, service tokens, and database credentials are dynamically issued per-request via Vault's secrets engine. No long-lived credentials in config or environment variables. Vault agent sidecar handles automatic renewal and rotation.</div>
+        </div>
+        <div class="ibm-product">
+          <span class="ibm-product-badge badge-opa">OPA Policy Engine</span>
+          <div class="ibm-product-desc"><strong>Request-time policy enforcement.</strong> Every inbound request is evaluated against OPA policies before enrichment — checking user identity, data classification, model access rights, and jurisdiction constraints. Policies are expressed as Rego, version-controlled, and hot-reloaded without gateway restarts.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ibm-row">
+      <div class="ibm-layer-id">
+        <div class="ibm-layer-tag" style="color:#F5A623">Stream Layer</div>
+        <div class="ibm-layer-name">Real-time pipeline</div>
+        <div class="ibm-layer-open">open: apache kafka</div>
+      </div>
+      <div class="ibm-layer-body">
+        <div class="ibm-product">
+          <span class="ibm-product-badge badge-confluent">Confluent Platform</span>
+          <div class="ibm-product-desc"><strong>Enterprise Kafka with Schema Registry, ksqlDB, and Kafka Connect built in.</strong> Confluent's Schema Registry enforces Avro/Protobuf contracts on the <code style="font-family:var(--mono);font-size:11px;color:#F5A623">raw-interactions</code> and <code style="font-family:var(--mono);font-size:11px;color:#F5A623">enriched-knowledge</code> topics — preventing schema drift across classifier, synthesiser, and evaluator consumers. ksqlDB enables stream-processing queries without a separate Flink or Spark cluster. Fully deployable on OpenShift via Confluent for Kubernetes operator.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ibm-row">
+      <div class="ibm-layer-id">
+        <div class="ibm-layer-tag" style="color:#00D4AA">Knowledge Repo</div>
+        <div class="ibm-layer-name">Institutional memory</div>
+        <div class="ibm-layer-open">open: postgres + weaviate</div>
+      </div>
+      <div class="ibm-layer-body">
+        <div class="ibm-product">
+          <span class="ibm-product-badge badge-wx-data">watsonx.data OpenSearch</span>
+          <div class="ibm-product-desc"><strong>Vector store and semantic retrieval layer.</strong> OpenSearch's k-NN plugin provides ANN-based vector similarity search across embedded knowledge chunks — the primary retrieval path for the MCP server's context_lookup tool. Integrated natively into the watsonx.data lakehouse, with column-level access control via IBM IAM and full audit logging to the data governance layer.</div>
+        </div>
+        <div class="ibm-product">
+          <span class="ibm-product-badge badge-openrag">watsonx.data openRAG</span>
+          <div class="ibm-product-desc"><strong>Knowledge graph and RAG pipeline orchestration.</strong> openRAG manages entity extraction, relationship mapping, and graph-based retrieval across the enterprise concept graph — surfacing multi-hop reasoning that flat vector search cannot reach. Handles the synthesiser consumer's output: linking decisions to their evidence chains, mapping domain concepts to related patterns, and enabling the decay agent to propagate confidence changes across connected nodes.</div>
+        </div>
+        <div class="ibm-product">
+          <span class="ibm-product-badge badge-iam">IBM IAM</span>
+          <div class="ibm-product-desc"><strong>Identity layer for domain-partitioned RBAC.</strong> IBM IAM enforces access boundaries across knowledge domains — a finance query cannot retrieve engineering knowledge, an external agent cannot access internal decision logs. IAM integrates with OPA: IAM provides the identity assertion, OPA applies the policy. All access decisions are logged to the watsonx.data audit store.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ibm-row">
+      <div class="ibm-layer-id">
+        <div class="ibm-layer-tag" style="color:#4F8EF7">MCP Server</div>
+        <div class="ibm-layer-name">Retrieval interface</div>
+        <div class="ibm-layer-open">open: mcp protocol</div>
+      </div>
+      <div class="ibm-layer-body">
+        <div class="ibm-product">
+          <span class="ibm-product-badge badge-wx">watsonx Orchestrate</span>
+          <div class="ibm-product-desc"><strong>MCP tool host and skill registry.</strong> Orchestrate exposes the ECE knowledge repository as native MCP tools — <code style="font-family:var(--mono);font-size:11px;color:#6BA4F8">context_lookup</code>, <code style="font-family:var(--mono);font-size:11px;color:#6BA4F8">decision_log</code>, <code style="font-family:var(--mono);font-size:11px;color:#6BA4F8">knowledge_search</code> — which any connected LLM or agent can invoke. The retrieval plane (OpenSearch k-NN) and governance plane (OPA + IAM) are wired as separate Orchestrate skills with distinct SLA profiles, keeping the hot retrieval path independent of asynchronous compliance checks.</div>
+        </div>
+        <div class="ibm-product">
+          <span class="ibm-product-badge badge-vault">HashiCorp Vault</span>
+          <div class="ibm-product-desc"><strong>Credential management for MCP tool endpoints.</strong> Service-to-service credentials between the MCP server, OpenSearch, openRAG, and external LLM APIs are managed via Vault's PKI and database secrets engines. Mutual TLS between all components. Certificate rotation is automatic and zero-downtime.</div>
+        </div>
+        <div class="ibm-product">
+          <span class="ibm-product-badge badge-opa">OPA Policy Engine</span>
+          <div class="ibm-product-desc"><strong>Retrieval-time policy evaluation.</strong> Before any context chunk is returned by the MCP server, OPA evaluates the requesting agent's identity, the chunk's classification, and the applicable data residency policy. Chunks flagged as jurisdiction-restricted are filtered before they reach the LLM prompt. Policy violations are emitted to Confluent for real-time alerting.</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- IBM ARCHITECTURE DIAGRAM -->
+  <div class="section-label" style="margin-bottom:12px">IBM Stack Diagram</div>
+  <h3 style="font-size:20px;font-weight:300;letter-spacing:-0.01em;margin-bottom:8px">Component mapping, <strong style="font-weight:600">layer by layer</strong></h3>
+  <p class="section-desc">How each open ECE layer resolves to IBM platform components.</p>
+
+  <div class="ibm-diagram-wrap">
+    <svg viewBox="0 0 960 680" xmlns="http://www.w3.org/2000/svg" font-family="'JetBrains Mono', monospace">
+      <defs>
+        <marker id="ibm-arr" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#4F8EF7" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+        <marker id="ibm-arr-teal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#00D4AA" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+        <marker id="ibm-arr-v" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto-start-reverse">
+          <path d="M2 1L8 5L2 9" fill="none" stroke="#FF8080" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </marker>
+      </defs>
+
+      <!-- BG BANDS -->
+      <rect x="16" y="16"  width="928" height="88"  rx="8" fill="#1A1F35" stroke="rgba(255,107,107,0.2)"  stroke-width="0.5"/>
+      <rect x="16" y="120" width="928" height="88"  rx="8" fill="#1A1F28" stroke="rgba(100,70,230,0.2)"  stroke-width="0.5"/>
+      <rect x="16" y="224" width="928" height="128" rx="8" fill="#111D1A" stroke="rgba(0,212,170,0.2)"   stroke-width="0.5"/>
+      <rect x="16" y="368" width="928" height="88"  rx="8" fill="#16202E" stroke="rgba(79,142,247,0.2)"  stroke-width="0.5"/>
+      <rect x="16" y="472" width="928" height="88"  rx="8" fill="#1A1818" stroke="rgba(255,107,107,0.15)" stroke-width="0.5"/>
+      <rect x="16" y="576" width="928" height="88"  rx="8" fill="#131A1A" stroke="rgba(255,128,128,0.12)" stroke-width="0.5"/>
+
+      <!-- LAYER LABELS -->
+      <text x="32" y="36"  fill="#FF8080"  font-size="9" letter-spacing="2" opacity="0.85">AGENT GATEWAY</text>
+      <text x="32" y="140" fill="#8B70F0"  font-size="9" letter-spacing="2" opacity="0.85">STREAM LAYER</text>
+      <text x="32" y="244" fill="#00D4AA"  font-size="9" letter-spacing="2" opacity="0.85">KNOWLEDGE REPOSITORY</text>
+      <text x="32" y="388" fill="#4F8EF7"  font-size="9" letter-spacing="2" opacity="0.85">MCP SERVER</text>
+      <text x="32" y="492" fill="#FF8080"  font-size="9" letter-spacing="2" opacity="0.85">VAULT + POLICY</text>
+      <text x="32" y="596" fill="#5C6E94"  font-size="9" letter-spacing="2" opacity="0.85">IDENTITY + AUDIT</text>
+
+      <!-- ── AGENT GATEWAY ROW ── -->
+      <!-- wx.Orchestrate -->
+      <rect x="32" y="46" width="380" height="48" rx="6" fill="#1E1840" stroke="rgba(79,142,247,0.3)" stroke-width="0.75"/>
+      <text x="52" y="64"  fill="#6BA4F8" font-size="10" font-weight="500">watsonx Orchestrate</text>
+      <text x="52" y="82"  fill="#3A4A7A" font-size="9">Agent control plane · intent router · skill registry · tool orchestration</text>
+
+      <!-- Open label -->
+      <rect x="432" y="46" width="240" height="48" rx="6" fill="#141828" stroke="rgba(79,142,247,0.12)" stroke-width="0.5"/>
+      <text x="452" y="64"  fill="#2B3A5A" font-size="10" font-weight="500">open: nginx / envoy</text>
+      <text x="452" y="82"  fill="#1E2A3A" font-size="9">Transparent reverse proxy alternative</text>
+
+      <!-- OPA (spans gateway + policy row visually) -->
+      <rect x="694" y="46" width="234" height="48" rx="6" fill="#1A1030" stroke="rgba(167,139,250,0.25)" stroke-width="0.75"/>
+      <text x="714" y="64"  fill="#B09DF8" font-size="10" font-weight="500">OPA — request-time policy</text>
+      <text x="714" y="82"  fill="#5A4A8A" font-size="9">Rego policies · identity assertion · hot-reload</text>
+
+      <!-- Arrows gateway → stream -->
+      <line x1="232" y1="94" x2="232" y2="118" stroke="#8B70F0" stroke-width="0.75" marker-end="url(#ibm-arr)"/>
+      <line class="flow-pulse flow-pulse-2" x1="232" y1="94" x2="232" y2="118" stroke="#8B70F0" stroke-width="1.5" opacity="0.6"/>
+
+      <!-- ── STREAM LAYER ROW ── -->
+      <rect x="32" y="130" width="868" height="66" rx="6" fill="#1A1030" stroke="rgba(100,70,230,0.35)" stroke-width="0.75"/>
+      <text x="52" y="150"  fill="#8B70F0" font-size="10" font-weight="500">Confluent Platform</text>
+      <text x="52" y="168"  fill="#4A3A70" font-size="9">Schema Registry · ksqlDB · Kafka Connect · OpenShift operator · topics: raw-interactions / enriched-knowledge / context-feedback</text>
+      <!-- Confluent pulse dots -->
+      <circle class="kafka-blink" cx="860" cy="147" r="4" fill="#8B70F0"/>
+      <circle class="kafka-blink" cx="876" cy="147" r="4" fill="#8B70F0" style="animation-delay:0.5s"/>
+      <circle class="kafka-blink" cx="892" cy="147" r="4" fill="#8B70F0" style="animation-delay:1s"/>
+
+      <!-- Arrows stream → knowledge -->
+      <line x1="480" y1="196" x2="480" y2="222" stroke="#00D4AA" stroke-width="0.75" marker-end="url(#ibm-arr-teal)"/>
+      <line class="flow-pulse flow-pulse-3" x1="480" y1="196" x2="480" y2="222" stroke="#00D4AA" stroke-width="1.5" opacity="0.6"/>
+
+      <!-- ── KNOWLEDGE REPO ROW ── -->
+      <!-- OpenSearch -->
+      <rect x="32" y="234" width="440" height="106" rx="6" fill="#0D1F1A" stroke="rgba(0,212,170,0.3)" stroke-width="0.75"/>
+      <text x="52" y="256"  fill="#00D4AA" font-size="10" font-weight="500">watsonx.data — OpenSearch</text>
+      <text x="52" y="274"  fill="#1A5A4A" font-size="9">Vector store · k-NN ANN retrieval · sub-50ms SLA</text>
+      <text x="52" y="290"  fill="#1A5A4A" font-size="9">Column-level access control · IBM IAM integration</text>
+      <text x="52" y="306"  fill="#1A5A4A" font-size="9">Full audit log → watsonx.data governance layer</text>
+      <text x="52" y="322"  fill="#0D3A2A" font-size="9">lakehouse-native · OpenShift-deployable · Cloud Pak for Data</text>
+
+      <!-- openRAG -->
+      <rect x="492" y="234" width="452" height="106" rx="6" fill="#1A1A0A" stroke="rgba(245,166,35,0.25)" stroke-width="0.75"/>
+      <text x="512" y="256"  fill="#F5A623" font-size="10" font-weight="500">watsonx.data — openRAG</text>
+      <text x="512" y="274"  fill="#6B5A1A" font-size="9">Knowledge graph · entity extraction · relationship mapping</text>
+      <text x="512" y="290"  fill="#6B5A1A" font-size="9">Multi-hop graph retrieval · RAG pipeline orchestration</text>
+      <text x="512" y="306"  fill="#6B5A1A" font-size="9">Synthesiser consumer output → concept graph persistence</text>
+      <text x="512" y="322"  fill="#4A3A0A" font-size="9">Memory lifecycle agent · tier promotion · decay scoring</text>
+
+      <!-- Arrows knowledge → MCP -->
+      <line x1="480" y1="352" x2="480" y2="366" stroke="#4F8EF7" stroke-width="0.75" marker-end="url(#ibm-arr)"/>
+      <line class="flow-pulse" x1="480" y1="352" x2="480" y2="366" stroke="#4F8EF7" stroke-width="1.5" opacity="0.6"/>
+
+      <!-- ── MCP SERVER ROW ── -->
+      <rect x="32" y="378" width="868" height="66" rx="6" fill="#111D2E" stroke="rgba(79,142,247,0.35)" stroke-width="0.75"/>
+      <text x="52" y="398"  fill="#4F8EF7" font-size="10" font-weight="500">watsonx Orchestrate — MCP tool host</text>
+      <text x="52" y="416"  fill="#2A4A7A" font-size="9">context_lookup (OpenSearch retrieval plane) · decision_log · knowledge_search (openRAG graph plane) · OPA policy gate per tool call · Vault credential injection</text>
+
+      <!-- MCP → gateway loop -->
+      <path d="M 32 411 Q 8 411 8 70 Q 8 46 32 46" fill="none" stroke="#4F8EF7" stroke-width="1" stroke-dasharray="5 3" marker-end="url(#ibm-arr)"/>
+      <path class="flow-pulse flow-pulse-2" d="M 32 411 Q 8 411 8 70 Q 8 46 32 46" fill="none" stroke="#4F8EF7" stroke-width="2" opacity="0.5"/>
+
+      <!-- ── VAULT + POLICY ROW ── -->
+      <rect x="32" y="482" width="440" height="66" rx="6" fill="#200E0E" stroke="rgba(255,128,128,0.3)" stroke-width="0.75"/>
+      <text x="52" y="502"  fill="#FF8080" font-size="10" font-weight="500">HashiCorp Vault</text>
+      <text x="52" y="520"  fill="#7A3A3A" font-size="9">Dynamic secrets · PKI engine · database credential rotation</text>
+      <text x="52" y="536"  fill="#7A3A3A" font-size="9">Vault agent sidecar · mTLS across all service boundaries</text>
+
+      <rect x="492" y="482" width="452" height="66" rx="6" fill="#141020" stroke="rgba(167,139,250,0.25)" stroke-width="0.75"/>
+      <text x="512" y="502"  fill="#B09DF8" font-size="10" font-weight="500">Open Policy Agent (OPA)</text>
+      <text x="512" y="520"  fill="#5A4A8A" font-size="9">Rego policies · data residency rules · jurisdiction enforcement</text>
+      <text x="512" y="536"  fill="#5A4A8A" font-size="9">Policy-as-code · version-controlled · hot-reload · Confluent alert emit</text>
+
+      <!-- ── IDENTITY + AUDIT ROW ── -->
+      <rect x="32" y="586" width="868" height="66" rx="6" fill="#0E1818" stroke="rgba(79,142,247,0.15)" stroke-width="0.5"/>
+      <text x="52" y="606"  fill="#4F8EF7" font-size="10" font-weight="500">IBM IAM — Identity &amp; Access</text>
+      <text x="282" y="606" fill="#5C6E94" font-size="10">·</text>
+      <text x="296" y="606" fill="#5C6E94" font-size="10" font-weight="500">watsonx.data — Audit Store</text>
+      <text x="52" y="624"  fill="#2A3A3A" font-size="9">Enterprise SSO · domain-partitioned RBAC · identity assertion for OPA · all access decisions logged with trace_id to watsonx.data audit store · APAC regulatory compliance</text>
+
+      <!-- Loop label -->
+      <text x="8" y="235" fill="#2B5AB7" font-size="9" transform="rotate(-90 8 235)" text-anchor="middle">MCP context loop</text>
+    </svg>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div>
+    <div class="footer-logo">ECE<span>::</span>Enterprise Context Engine</div>
+    <div class="footer-by" style="margin-top:8px">
+      Designed and built by <a href="https://github.com/">Anup Kumar</a> · Distinguished Engineer, IBM APAC
+    </div>
+  </div>
+  <div class="footer-links">
+    <a href="https://github.com/">GitHub</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#ibm">IBM Stack</a>
+  </div>
+</footer>
+
+</body>
+</html>
